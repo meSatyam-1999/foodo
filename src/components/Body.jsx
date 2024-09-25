@@ -4,7 +4,11 @@ import { useState, useEffect } from "react";
 import Shimmer from "./Shimmer";
 
 const Body = () => {
+
   const [listOfRestaurants, setListOfRestaurants] = useState([]);
+  const [fileteredRestaurant, setFilteredRestaurant] = useState([]);
+
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -20,6 +24,11 @@ const Body = () => {
     setListOfRestaurants(
       json?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle?.restaurants
     );
+
+    setFilteredRestaurant(
+      json?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle?.restaurants
+    );
+
   };
 
   return listOfRestaurants == 0 ? (
@@ -31,10 +40,18 @@ const Body = () => {
           type="text"
           placeholder="Search favourite food"
           className="search-bar border border-black p-3 px-16 rounded-lg"
+          value={searchText}
+          onChange={(e) => {
+            setSearchText(e.target.value);
+          }}  
         />
         <button className="search-btn border border-black p-3 bg-black rounded-lg m-2 text-white hover:bg-red-700" onClick={() => {
-          
-        }}>
+          const filteredRestaurant = listOfRestaurants.filter((res) => res.info.name.toLowerCase().includes(searchText.toLowerCase()))
+        
+            setFilteredRestaurant(filteredRestaurant);
+        }}
+        
+        >
           Search
         </button>
       </div>
@@ -68,7 +85,7 @@ const Body = () => {
       <div className="res-container flex flex-wrap ml-10 mr-10">
         {/* Mapping the data to the card component */}
 
-        {listOfRestaurants.map((restaurant, index) => (
+        {fileteredRestaurant.map((restaurant, index) => (
           <Card resData={restaurant} key={index} />
         ))}
       </div>
