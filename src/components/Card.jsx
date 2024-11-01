@@ -1,6 +1,8 @@
+/* eslint-disable react/display-name */
+/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react/prop-types */
 
-import CDN_URL from "../utils/constant";
+import { CDN_URL } from "../utils/constant";
 
 const Card = ({ resData }) => {
   const { name, areaName, avgRating, cuisines, sla, cloudinaryImageId } =
@@ -11,10 +13,7 @@ const Card = ({ resData }) => {
       <div className="res-img">
         <img
           className="h-[150px] w-[200px]"
-          src={
-            CDN_URL +
-            cloudinaryImageId
-          }
+          src={CDN_URL + cloudinaryImageId}
           alt="Restaurant Card"
         />
       </div>
@@ -31,6 +30,23 @@ const Card = ({ resData }) => {
       </div>
     </div>
   );
+};
+
+// Higher Order Component
+// input - RestaurantCard => RestaurantCardPromoted
+
+
+export const withPromotedLabel = (Card) => {
+  return (props) => {
+    return (
+      <div>
+        <label className="absolute text-white bg-black m-2 p-2 rounded-lg">
+          Promoted
+        </label>
+        <Card {...props} />
+      </div>
+    );
+  };
 };
 
 export default Card;

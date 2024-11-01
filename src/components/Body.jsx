@@ -1,23 +1,25 @@
 import Card from "./Card";
+import { withPromotedLabel } from "./Card";
 
 import { useState, useEffect } from "react";
 import Shimmer from "./Shimmer";
+import { RESTAURANTLIST_URL } from "./../utils/constant";
+import { Link } from "react-router-dom";
 
 const Body = () => {
-
   const [listOfRestaurants, setListOfRestaurants] = useState([]);
   const [fileteredRestaurant, setFilteredRestaurant] = useState([]);
 
   const [searchText, setSearchText] = useState("");
+
+  const RestaurantCardPromoted = withPromotedLabel(Card);
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    const data = await fetch(
-      "https://www.swiggy.com/dapi/restaurants/list/v5?lat=17.406498&lng=78.47724389999999&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING"
-    );
+    const data = await fetch(RESTAURANTLIST_URL);
 
     const json = await data.json();
 
@@ -25,10 +27,10 @@ const Body = () => {
       json?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle?.restaurants
     );
 
+
     setFilteredRestaurant(
       json?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle?.restaurants
     );
-
   };
 
   return listOfRestaurants == 0 ? (
@@ -43,14 +45,17 @@ const Body = () => {
           value={searchText}
           onChange={(e) => {
             setSearchText(e.target.value);
-          }}  
+          }}
         />
-        <button className="search-btn border border-black p-3 bg-black rounded-lg m-2 text-white hover:bg-red-700" onClick={() => {
-          const filteredRestaurant = listOfRestaurants.filter((res) => res.info.name.toLowerCase().includes(searchText.toLowerCase()))
-        
+        <button
+          className="search-btn border border-black p-3 bg-black rounded-lg m-2 text-white hover:bg-red-700"
+          onClick={() => {
+            const filteredRestaurant = listOfRestaurants.filter((res) =>
+              res.info.name.toLowerCase().includes(searchText.toLowerCase())
+            );
+
             setFilteredRestaurant(filteredRestaurant);
-        }}
-        
+          }}
         >
           Search
         </button>
@@ -85,8 +90,17 @@ const Body = () => {
       <div className="res-container flex flex-wrap ml-10 mr-10">
         {/* Mapping the data to the card component */}
 
-        {fileteredRestaurant.map((restaurant, index) => (
-          <Card resData={restaurant} key={index} />
+        {fileteredRestaurant.map((restaurant) => (
+          <Link
+            key={restaurant.info.id}
+            to={"/restaurants/" + restaurant.info.id}
+          >
+            {restaurant.info.promoted ? (
+              <RestaurantCardPromoted resData={restaurant} />
+            ) : (
+              <Card resData={restaurant} />
+            )}
+          </Link>
         ))}
       </div>
     </div>
